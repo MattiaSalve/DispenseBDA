@@ -1,99 +1,14 @@
-\documentclass{article}
+\documentclass[a4paper, justified]{tufte-book}
 
 \usepackage[italian]{babel}
 \usepackage{amsfonts,multicol, amsmath, tikz, pgfplots, titlesec, fontspec, xcolor}
 \pgfplotsset{compat=newest}
-\usepackage[a4paper]{geometry}
 
-\setmainfont{DINNextW1G}[
-    Path = ./font/,
-    Extension = .otf,
-    UprightFont=*-Regular,
-    BoldFont=*-Bold,
-    ItalicFont=*-Italic,
-    BoldItalicFont=*-BoldItalic,
-]
-\definecolor{ETHBlau}{RGB}{33, 92, 175}
-
-\usepgfplotslibrary{fillbetween}
-
-\pgfmathdeclarefunction{gauss}{2}{%
-  \pgfmathparse{1/(#2*sqrt(2*pi))*exp(-((x-#1)^2)/(2*#2^2))}%
-}
+\titleformat{\chapter}{\huge}{}{}{}
+% \setmainfont{DIN Next W1G}
+\setmainfont{Economist Serif VF}
 
 \begin{document}
-    \begin{titlepage}
-        \begin{center}
-            \vspace{3cm}
-            \Huge\textbf{Dispense di BDA}\\
-            \vspace{1cm}
-            \huge{A cura di Mattia Salvetti}\\
-            \vspace{1cm}
-            \large{Anno Accademico 2023/24}\\
-            \vspace{5cm}
-            \begin{tikzpicture}[]
-                \begin{axis}[width = \textwidth, height = 0.5 * \textheight,
-                    xmin = -11, xmax = 11, ymin = 0, ymax = 0.15, axis lines = middle,
-                    xticklabels={},yticklabels={}]
-                    \path [name path=xaxis]
-                    (\pgfkeysvalueof{/pgfplots/xmin},0)
-                    (\pgfkeysvalueof{/pgfplots/xmax},0);
-                    \addplot [smooth, thick, domain = -10:10, name path = A] {gauss(0,3)};
-                    \addplot [ETHBlau, opacity = 0.3]fill between [of = A and xaxis];
-                \end{axis}
-            \end{tikzpicture}
-            \vspace{1cm}
-            
-        \end{center}
-    \end{titlepage}
     \tableofcontents
-    \newpage
-    \begin{center}
-        \Huge\textbf{Business Data Analytics I}
-    \end{center}
-    \section{Introduzione} 
-    Lo scopo fondamentale di questo corso è quello di fornire lo studente con gli strumenti necessari a elaborare ed estrapolare informazioni utili da grandi moli di dati. Proprio la quantità di questi dati porta alla necessità di capire cose è importante e cosa no, e diventa fondamentale avere dei modelli per estrapolare informazioni automaticamente su basi statistiche. 
-    \subsection{Dati Multivariati}
-    Possiamo rappresentare i dati in forma matriciale, avendo $n$ unità statistiche di cui osserviamo $p$ variabili. A questo punto possiamo scrivere la matrice dei dati come 
-    \begin{equation}
-        \mathbb X = \begin{bmatrix} x_{11} & x_{12} & \ldots & x_{1p} \\ x_{21} & x_{22} & \ldots & x_{2p} \\ \vdots & \vdots & \ddots & \vdots \\ x_{n1} & x_{n2} & \ldots & x_{np} \end{bmatrix} \in \mathbb R^{n x p}
-    \end{equation}
-    dove $x_{ij}$ è la $j$-esima variabile della $i$-esima unità statistica. 
-    Fatto ciò i dati possono essere rappresentati come una nuvola di punti appartenente a $\mathbb R^p$.
-    Ricordiamo che al crescere di $p$ l'analisi diventa più complicata, esistono quindi dei metodi di riduzione dimensionali che permetto di passare da $p$ a $z$ variabili con $z < p$.
-    
-    \section{Analisi Univariata}
-        Possiamo vedere la nostra matrice dei dati come una serie di vettori riga
-        \begin{equation}
-            \mathbb X =  [X_{1}, X_{2}, \dots, X_{n}]^T 
-        \end{equation}
-        Dove $X_1 = [x_{11}, x_{12}, \ldots, x_{1p}]$, $X_2 = [x_{21}, x_{22}, \ldots, x_{2p}]$ e così via.
-        A questo punto, dai campioni si può fare statistica descrittiva o inferenziale. 
-        Partiamo da una rapida discussione della statistica descrittiva.
-        \subsection{Statistica Descrittiva}
-        La statistica descrittiva è una statistica che ci è fornita una descrizione della distribuzione dei dati.
-        Alcuni indici per la statistica descrittiva sono:
-        \begin{itemize}
-            \item Media campionaria: $\bar x_j = \frac{1}{n} \sum_{i=1}^n x_{ij}\ \forall j$
-            \item Varianza campionaria: $S_{jj} = \frac{1}{n} \sum_{i=1}^n (x_{ij} - \bar x_j)^2$ NB: spesso si usa $n-1$ al denominatore per ragioni di non distorsione.
-            \item Deviazione standard: $\sqrt{S_{jj}}$
-        \end{itemize}
-
-        Un altro aspetto che tornerà utile per i nostri scopi è lavorare con variabili confrontabili. Per fare ciò è fondamentale che esse siano standardizzate. 
-        Standardizzare una variabile vuol dire renderla adimensionale e a media nulla, così facendo:
-        \begin{equation}
-        x^*_{.j}=\frac{x_{.j} - \bar x_j}{{\sqrt{S_{jj}}}}
-        \end{equation}
-        \subsection{Statistica Inferenziale}
-        Da un campione casuale $x_1, \dots, x_n$ possiamo, ipotizzando che i dati siano indipendenti ed identicamente distribuiti, ovvero che ogni osservazione sia indipendente da quella precedente e che esse seguano tutte la stessa distribuzione statistica $X_1, \dots, X_n \sim \mathcal F(\theta)$, dove $\mathcal F (\theta)$ è la legge della variabile aleatoria, e $\theta$ è il parametro della famiglia di distribuzioni.
-        Fatto ciò possiamo: 
-        \begin{itemize}
-            \item Stima puntuale: usare i parametri per associare un singolo valore al parametro
-            \item Stima intervallare: usare i parametri per associare un intervallo di valori al parametro con un certo intervallo di confidenza, ovvero costruisco un intervallo di confidenza con un certo livello
-            \item Test d'ipotesi: usa i parametri della distribuzione per capire se l'ipotesi $H_0$ è vera o falsa. 
-        \end{itemize}
-        \subsubsection{Stima Puntuale}
-
-
-
+    \include{./parte2/introduzione.tex}
 \end{document}
