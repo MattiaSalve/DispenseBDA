@@ -1,7 +1,8 @@
 \documentclass[a4paper, justified]{tufte-book}
 
 \usepackage[italian]{babel}
-\usepackage{amsfonts,multicol, amsmath, tikz, pgfplots, titlesec, fontspec, xcolor}
+\usepackage{graphicx ,amsfonts,multicol, amsmath, tikz, pgfplots, titlesec, fontspec, xcolor}
+\graphicspath{ {./images/} }
 \pgfplotsset{compat=newest}
 
 \titleformat{\chapter}{\huge}{}{}{}
@@ -11,4 +12,5 @@
 \begin{document}
     \tableofcontents
     \include{./parte2/introduzione.tex}
+    \include{./parte2/DAGs.tex}
 \end{document}
