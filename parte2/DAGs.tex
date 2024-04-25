@@ -67,3 +67,61 @@ Negli anni sono stati creati strumenti a supporto della costruzione di un DAG co
 \\Situazione statistica nella quale un trend o una relazione che è osservata tra diversi 
 sottogruppi sparisce quando i gruppi sono combinati. In altre parole, dividendo i dati in 
 gruppi, le conclusioni sono diverse rispetto a quelle derivanti da un’analisi aggregata.
+Una back-door path (BDP) è un percorso che è diretto verso D da una parte e termina verso Y
+dall'altra, cioè si ha una connessione tra D ed Y che non segue il percorso delle frecce.
+Lasciare un BDP aperto introduce un bias e non permette di indentificare l'effetto causale
+per via della presenza del cofounder. Per identificare la causalità, bisogna quindi chiudere
+tutti i BDP aperti. 
+\begin{marginfigure}
+    \includegraphics[width = \textwidth]{BDPchiuso}
+    \caption{Sulla sinistra, un BDP aperto. Sulla destra, controllando C, eliminiamo l'impatto 
+        di C su D ed A. La relazione fra D e Y è ora determinata solo da un percorso diretto.}
+\end{marginfigure}
+In questo esempio avremmo potuto controllare sia per C che per A, identificando correttamente
+la causalità tra D ed Y, ma allora perché non controllare per tutte le variabili sempre, senza
+perdere tempo capendo le relazioni tra le varaibili?
+Perché controllare variabili senza criterio può invalidare l'analisi qualora: 
+\begin{itemize}
+\begin{marginfigure}
+    \includegraphics[width = \textwidth]{overcontrolling}
+    \caption{Se controllassimo per C, perderemmo l'intero (caso 1) o parte (caso 2) impatto
+    di D su Y}
+\end{marginfigure}
+    \item La variabile controllata sia un mediator, cioè un discendente di D in un percorso 
+        diretto verso Y
+\begin{marginfigure}
+    \includegraphics[width = \textwidth]{overcontrollingcollider}
+    \caption{Controllare un collider può portare a creare un'associazione fra le variabili che 
+    lo concausano, anche quando queste sono indipendenti tra loro. Questo può portare all'apertura
+di un percorso controllando per un collider.}
+\end{marginfigure}
+    \item La variabile controllata sia un collider in una back-door path da D a Y
+\end{itemize}
+Per fare un esempio si supponga che il merito creditizio (A) e la validità di un progetto (B)
+influenzino la ricezione di un prestito (P = 1 se il prestito è concesso, 0 altrimenti). 
+Ipotizzando che A e B siano indipendenti e controllando per P osserveremmo una falsa correlazione 
+tra A e B. In particolare, se selezioniamo solo le imprese con P = 1, se esse hanno un progetto
+poco convincente dovranno avere un merito creditizio molto alto, creando una relazione di correlazione
+inversa tra le due variabili incorrelate.
+\subsubsection{Criterio del back-door}
+Condizioni sufficienti per l'identificazione dei nessi causali nei DAG:
+\begin{itemize}
+    \item Identificare tutti i back-door path da D a Y
+    \item Identificare i mediator
+    \item Bloccare solo i BDP aperti, controllandone le variabili cofounder
+    \item Stare attento a non controllare per mediator e collider
+\end{itemize}
+\subsubsection{Criterio del front-door}
+Potrebbe esistere una variabile U non osservabile (e quindi non controllabile), allora il 
+BDP $D \leftarrow U \to Y$ non può essere chiuso.
+\begin{marginfigure}
+    \includegraphics[width = \textwidth]{frontdoor}
+\end{marginfigure}
+Nell'esempio di destra, posso semplicemente stimare l'effetto di D su M ed N, e poi di queste 
+su Y. Combinando l'effetto delle due avremo l'effetto di D su Y. Per poter applicare il 
+criterio del front-door, le variabili M ed N devono essere 
+\begin{itemize}
+    \item Esaustive: la combinazione di M ed N catturano tutto l'effetto di D su Y
+    \item Isolate: tutti i back-door path da M a N sono bloccati un volta controllata D (
+        cioè non esistono cofounder per M e N)
+\end{itemize}

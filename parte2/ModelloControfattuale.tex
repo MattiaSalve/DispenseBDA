@@ -1,0 +1,88 @@
+\selectlanguage{italian}
+\chapter{Modello del Controfattuale}
+
+Dati:\\ 
+$Y_{0i}$ = Stato di salute della persona $i$ senza copertura assicurativa \\
+$Y_{1i}$ = Stato di salute della persona $i$ con copertura assicurativa \\
+L'effetto causale della copertura assicurativa è $Y_{1i} - Y_{0i}$. Se potessi osservare 
+la stessa persona potrei così stimare l'impattto della copertura assicurativa. Questo è impossibile
+nella realtà, quindi ci limitiamo a confrontare persone diverse con e senza polizza.
+Supponiamo quindi di osservare due persone, $i$ che sottoscrive la polizza (trattata) e 
+$j$ no (controllo). Nella realtà conosciamo solo $Y_{1i}$ e $Y_{0j}$, e non le altre. Un 
+modo per confrontare la validità della polizza può essere $Y_{1i} - Y_{0j}$, che può essere 
+riscritto come: $Y_{1i} - Y_{0j} = Y_{1i} - Y_{0i} + Y_{0i} - Y_{0j}$, ovvero l'effetto causale
+del trattamento su $i$, più la differenza tra $i$ e $j$ se entrambi scegliessero di non 
+sottoscrivere la copertura assicurativa. Questo secondo termine descrive la fragilità di $i$
+rispetto a $j$, ed è ciò che, nell’obiettivo d'individuare la relazione causale tra trattamento 
+e outcome, viene definito come \textit{selection bias} 
+Il confronto univariato quindi non permette di valutare in modo corretto la relazoine causale
+tra trattamento e outcome a causa del selection bias, ovvero della differenza tra trattate
+e controllo prima del trattamento.
+
+Estendendo le nostre considerazioni a un campione di trattate e controllo composti da più
+di un'osservazione:
+\begin{equation}
+    \mathbb{E}(Y|D=1) - \mathbb{E}(Y|D=0) = \mathrm{Effetto\ causale}(k) + \mathrm{selection\ bias}
+\end{equation}
+Se l'unica ragione di selection bias fossero differenze che possono essere misurate, allora
+non è un problema utilizzare il modello controfattuale: infatti basta prendere campioni caratterizzati
+da trattate simili.
+Il trattamento può essere rappresentato con una variabile dicotomica: $D_i=1$ se $i$ è trattato,
+$D_i=0$ altrimenti. Quindi il gruppo dei $D_i=0$ è definito gruppo di controllo (C), mentre il 
+gruppo dei $D_i = 1$ è il gruppo di trattamento (T).
+
+Definiamo l'\textit{outcome potenziale}:
+\\$Y_{1i}=$ outcome potenziale se l'unità $i$ è trattata ($D_i = 1$)
+\\$Y_{0i}=$ outcome potenziale se l'unità $i$ non è trattata ($D_i = 0$
+\\$Y_i = Y_{0i} + (Y_{1i} - Y_{0i})D_i$
+
+L'impatto causale è $Y_{1i} - Y_{0i}$, ma non possiamo osservare entrambi per uno stesso campione,
+si necessita quindi di un controfattuale (ovvero un'approssimazione di $Y_0$) per valutare 
+l'efficacia del trattamento: \textit{problema fondamentale dell'inferenza causale}.
+\\Per ottenere la stima analizziamo molteplici unità per ricavare l'effetto causale aggregato,
+se l'effetto del trattamento è omogeneo, corrisponde all'effetto individuale (ovvero si può
+assumere k costante).
+Perché questo approccio sia valido occorre che non ci siano effetti di spillover tra gruppo 
+di controllo e di trattamento. In caso di spillover, l’outcome del gruppo di controllo è 
+influenzato da quello del gruppo trattamento, comportando un bias nel risultato.
+SUTVA (Stable Unit treatment value assumption): l’outcome potenziale di qualsiasi unità $i$ 
+non varia con il trattamento assegnato ad altri, e per ogni unità non ci sono differenti 
+versioni dello stesso trattamento che porta a differenti outcome potenziali.
+Un esempio di spillover può essere un gruppo di dipendenti che segue un corso di formazione
+e poi condivide le informazioni con altri dipendenti che non lo hanno seguito.
+\subsection{Eterogeneità del trattamento}
+ATE (Average Treatment Effect):
+\begin{equation}
+   \mathbb E = \mathbb E(Y_1 - Y_0) = \mathbb E(Y_1) - \mathbb E(Y_0)
+\end{equation}
+ATT (Average Treatment Effect on Treated):
+\begin{equation}
+   \mathbb E(\delta|D=1) = \mathbb E(Y_1-Y_0|D=1) - \mathbb E(Y_0|D=1)
+\end{equation}
+ATU/ATNT(Average Treatment Effect on Untreated):
+\begin{equation}
+   \mathbb E(\delta|D=0) = \mathbb E(Y_1-Y_0|D=0) = \mathbb E(Y_1|D=0) - \mathbb E (Y_0|D=0)
+\end{equation}
+
+L'ATE è una combinazione lineare di ATT e ATU. Indicando con $\mu$ la percentuale di popolazione
+trattata: $\mathrm{ATE} = \mu \mathrm{ATT} + (1 - \mu) \mathrm{ATU}$, che può essere scritto
+anche come \begin{equation}
+   \mathbb E(\delta) = Pr(D=1)\mathbb E (\delta|D=1) +Pr(D=0)\mathbb E(\delta | D=0)
+\end{equation}
+Possiamo stimare ATT e ATU utilizzando uno stimatore ingenuo (\textit{naive estimator})
+\begin{equation}
+   NE = \mathbb E (Y_1|D=1) - \mathbb E(Y_0|D=0)
+\end{equation}
+\begin{equation}
+   NE = \mathbb E (Y_1|D=1) - \mathbb E(Y_0|D=1) + \mathbb E(Y_0|D=1) - \mathbb E (Y_0|D=0)
+\end{equation}
+Dove i primi due termini sono l'ATT e gli ultimi due il Bias, che indica quanto sbaglieremmo
+se approssimassimo ciò che non osserviamo $\mathbb E (Y_0|D=1)$ con ciò che osserviamo 
+$\mathbb E (Y_0|D=0)$
+\begin{equation}
+   NE = \mathbb E (Y_1|D=0) - \mathbb E(Y_0|D=0) + \mathbb E(Y_1|D=1) - \mathbb E (Y_1|D=0) = ATU + BIAS
+\end{equation}
+Conseguentemente, anche l'ATE stimato usando l'NE non sarà privo di bias, in quanto 
+\begin{equation}
+    NE = \pi(ATT + BIAS_{NEATT}) + (1-\pi)(ATU + BIAS_{NEATU})
+\end{equation}
